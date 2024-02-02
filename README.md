@@ -38,4 +38,18 @@ Then the table was edited via *Power Query Editor*:
 The **Products** table contains information about each product sold by the company, including the product code, name, category, cost price, sale price, and weight.
 <br>
 <br>
-The *Products* table was downloaded from the given online link as a .csv file and then imported into Power BI. 
+The *Products* table was downloaded from the given online link as a .csv file and then imported into Power BI. In the *Data* view, the *Remove Duplicates* function was used on the [Product Code] column to ensure each product code is unique. Finally the column names were altered to align with the Power BI naming conventions. 
+
+### 2.3: Import and Transform the Stores Dimension Table
+
+The **Stores** table contains information about each store, including the store code, store type, country, region, and address.
+<br>
+<br>
+The *Stores* table was imported by connecting with Azure Blob Storage (using the given credentials such as account name, account key and container name) and using the *Import* option in Power BI. Then the column names were altered to align with the Power BI naming conventions. 
+
+### 3.3: Import and Transform the Customers Table
+
+The **Customers** table contains information about each customer, including their full name, date of birth, company they represent, email, address, country and telephone. 
+<br>
+<br>
+The *Customers* table was downloaded from a given online link as a .zip file which then was unzipped within the local machine. Inside the zip file, a folder with three .csv files was located which contains data about three customer groups (customers from United Kingdom, Germany and United States). This data was imported into the Power BI via *Folder* data connector and then by selecting *Combine and Transform* the three .csv files were merged into one query. Once the data from three customer groups was successfully appended the [Full Name] column was created by merging [First Name] and [Last Name] columns together in *Power Query Editor*. Finally, any unnecessary columns were deleted (in this case only [Source.Name] column) and column names were altered to align with the Power BI naming conventions.
