@@ -47,9 +47,81 @@ The **Stores** table contains information about each store, including the store 
 <br>
 The *Stores* table was imported by connecting with Azure Blob Storage (using the given credentials such as account name, account key and container name) and using the *Import* option in Power BI. Then the column names were altered to align with the Power BI naming conventions. 
 
-### 3.3: Import and Transform the Customers Table
+### 2.3: Import and Transform the Customers Table
 
 The **Customers** table contains information about each customer, including their full name, date of birth, company they represent, email, address, country and telephone. 
 <br>
 <br>
 The *Customers* table was downloaded from a given online link as a .zip file which then was unzipped within the local machine. Inside the zip file, a folder with three .csv files was located which contains data about three customer groups (customers from United Kingdom, Germany and United States). This data was imported into the Power BI via *Folder* data connector and then by selecting *Combine and Transform* the three .csv files were merged into one query. Once the data from three customer groups was successfully appended the [Full Name] column was created by merging [First Name] and [Last Name] columns together in *Power Query Editor*. Finally, any unnecessary columns were deleted (in this case only [Source.Name] column) and column names were altered to align with the Power BI naming conventions.
+
+## Milestone 3: Create the Data Model
+
+In order to construct a Data Model, first of all, a comprehensive Date table is built to act as a basis for time intelligence in the Data Model. Secondly, the relationships between key tables are established to build a star-based schema with one to many relationships and a single filter direction. Thirdly, a Measures table (with key measures in it) is created to support the analysis, encompassing metrics like total orders, revenue, and quarter-based performance indicators. Finally, Date and Geographical Hierarchies are created to drill down into the data and perform granular analysis within the report. 
+
+### Task 3.1: Create a Date Table
+
+To make use of Power BI's time intelligence functions, a continuous date table was created covering the period from the earliest date in the Orders[Order Date] column (1st of January 2010) to the latest date in the Orders[Shipping Date] column (28th of June 2023). To do that, a DAX formula of **dates = CALENDAR(DATE(2010,1,1), DATE(2023,6,28))** was used.
+<br>
+<br>
+Then using the just created dates[Date] column, additional columns were derived from it with DAX formulas disclosed:
+
+ - [Day of Week] column:&emsp;&emsp;&ensp;&ensp;&ensp;**Day of Week = FORMAT(dates[Date], "dddd")**
+ - [Month Name] column: &emsp;&emsp;&emsp;**Month Name = FORMAT(dates[Date], "MMMM")**
+ - [Month Number] column: &emsp;&emsp;**Month Number = MONTH(dates[Date])**
+ - [Quarter] column: &emsp;&emsp;&emsp;&emsp;&emsp;&ensp;**Quarter = QUARTER(dates[Date])**
+ - [Year] column: &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**Year = YEAR(dates[Date])**
+ - [Start of Year] column: &emsp;&emsp;&emsp;&ensp;**Start of Year = STARTOFYEAR(dates[Date])**
+ - [Start of Quarter] column: &emsp;&emsp;**Start of Quarter = STARTOFQUARTER(dates[Date])**
+ - [Start of Month] column: &emsp;&emsp;&ensp;**Start of Month = STARTOFMONTH(dates[Date])**
+ - [Start of Week] column: &emsp;&emsp;&emsp;**Start of Week = dates[Date] - WEEKDAY(dates[Date],2) + 1** </ul>
+
+### Task 3.2: Build the Star Schema Data Model
+
+In this task the following relationships between tables were created via the *Model View* to form a star schema:
+
+ - products[Product Code] to orders[Product Code]
+ - stores[Store Code] to orders[Store Code]
+ - customers[User UUID] to orders[User ID] (active relationship)
+ - dates[Date] to orders[Shipping Date] (inactive relationship)</ul>
+
+All the relationships mentioned above are one-to-many with a single filter direction flowing from the dimension table side to the fact table side. In our case tables *orders* and *customers* are fact tables while tables *products*, *stores* and *dates* are dimension tables. 
+<br> See the image below of the completed star schema:
+<br>
+<br>
+![alt text](star_schema.png)
+
+### Task 3.3: Create a Measures Table
+
+Creating a separate table for measures helps us to keep our data model organised and easy to navigate. A measures table called *measures table* was created in the data **Model View* with **Power Query Editor**. 
+
+### Task 3.4: Create Key Measures
+
+See below a list of key measures created in the *measures table* together with the DAX formulas used to create them:
+
+ - Total Orders:&ensp;&emsp;&emsp;**Total Orders = COUNT(orders[Product Code])**
+ - Total Revenue: &ensp;&emsp;**Total Revenue = SUMX(orders, orders[Product Quantity] *  RELATED(products[Sale Price]))**
+ - Total Profit: &ensp;&ensp;&emsp;&emsp;**Total Profit = SUMX(orders, orders[Product Quantity] * (RELATED(products[Sale Price]) - RELATED(products[Cost Price])))**
+ - Total Customers:&ensp;&ensp;**Total Customers = DISTINCTCOUNT(orders[User ID])**
+ - Total Quantity:&ensp;&ensp;&emsp;**Total Quantity = SUM(orders[Product Quantity])**
+ - Profit YTD: &ensp;&emsp;&emsp;&emsp;**Profit YTD = TOTALYTD([Total Profit], dates[Date])**
+ - Revenue YTD:&ensp;&emsp;&emsp;**Revenue YTD = TOTALYTD([Total Revenue], dates[Date])** </ul>
+
+### Task 3.5: Create Date and Geography 
+
+Hierarchies allow us to to drill down into our data and perform granular analysis within our report. In this report two hierarchies will be created: *Date Hierarchy* and *Geography Hierarchy*.
+<br>
+<br>
+In *dates* table a date hierarchy is created using the following levels:
+ - Start of Year
+ - Start of Quarter
+ - Start of Month
+ - Start of Week
+ - Date </ul>
+
+Before a geography hierarchy can be creates, several adjustments need to be made in *stores* table. Firstly, a new calculated column named [Country] is created based on the stores[Country Code] column (via **Add Column from Examples** method). It contains country code and a full country name (for example, GB: United Kingdom or US: United States). Secondly, another calculated column named [Geography] is created based on stores[Country Region] and stores[Country] (created by duplicating stores[Country Region] and stores[Country] columns and then merging them together (columns separated by comma and space)). The values in stores[Geography] column would be in the format of "Suffolk, GB: United Kingdom" or "Berlin, DE: Germany". The column can prove to be useful as it can make the mapping more accurate. Finally, the correct data category is assigned to [World Region], [Country] and [Country Region] columns. [World Region] is assigned to category *Continent*, [Country] to *Country* and [Country Region] to *State or Province*. With all these changes, now we can create a geography hierarchy.
+<br>
+<br>
+In *stores* table a geography hierarchy is created using the following levels:
+ - World Region
+ - Country
+ - Country Region </ul>
