@@ -2,11 +2,11 @@
 
 **Scenario and task given:**
 <br>
-_You have recently been approached by a medium-sized international retailer who is keen on elevating their business intelligence practices. With operations spanning across different regions, they've accumulated large amounts of sales from disparate sources over the years._
+*You have recently been approached by a medium-sized international retailer who is keen on elevating their business intelligence practices. With operations spanning across different regions, they've accumulated large amounts of sales from disparate sources over the years.*
 
-_Recognizing the value of this data, they aim to transform it into actionable insights for better decision-making. Your goal is to use Microsoft Power BI to design a comprehensive Quarterly report. This will involve extracting and transforming data from various origins, designing a robust data model rooted in a star-based schema, and then constructing a multi-page report._
+*Recognizing the value of this data, they aim to transform it into actionable insights for better decision-making. Your goal is to use Microsoft Power BI to design a comprehensive Quarterly report. This will involve extracting and transforming data from various origins, designing a robust data model rooted in a star-based schema, and then constructing a multi-page report.*
 
-_The report will present a high-level business summary tailored for C-suite executives, and also give insights into their highest value customers segmented by sales region, provide a detailed analysis of top-performing products categorised by type against their sales targets, and a visually appealing map visual that spotlights the performance metrics of their retail outlets across different territories._
+*The report will present a high-level business summary tailored for C-suite executives, and also give insights into their highest value customers segmented by sales region, provide a detailed analysis of top-performing products categorised by type against their sales targets, and a visually appealing map visual that spotlights the performance metrics of their retail outlets across different territories.*
 <br>
 <br>
 The work in the project is described through **10 Milestones**.
@@ -136,7 +136,7 @@ As the title says, this milestone will concentrate on creating a report page foc
 
 ### Task 5.1: Create Headline Card Visuals
 
-Firstly two rectangle shapes were created and positioned on the left corner of the **Customer Details** page, serving as backgrounds for the card visuals (background colour set to purple). Secondly, a new card visual is created for the [Total Customers] measure which is renamed to **Unique Customers** and then placed on one of the rectangle shapes. Thirdly, additional measure called *Revenue per Customer* was added to the *measures table* with DAX formula **Revenue per Customer = [Total Revenue] / [Total Customers]**. Finally, a second card visual is created for the just created *Revenue per Customer* measure. 
+Firstly two rectangle shapes were created and positioned on the left corner of the **Customer Details** page, serving as backgrounds for the card visuals (background colour set to purple). Secondly, a new card visual is created for the [Total Customers] measure which is renamed to **Unique Customers** and then placed on one of the rectangle shapes. One of the shapes and the *Unique Customers* card is then grouped together as *Group 1* using **Selection** pane in order to treat those two objects as a single unit. Thirdly, additional measure called *Revenue per Customer* was added to the *measures table* with DAX formula **Revenue per Customer = [Total Revenue] / [Total Customers]**. Finally, a second card visual is created for the just created *Revenue per Customer* measure. This card visual is grouped as well with the remaining rectangle shape as *Group 2*. 
 
 ### Task 5.2: Create the Summary Chart
 
@@ -167,3 +167,65 @@ With these measures we have a three card visual that provides insights into the 
 ### Task 5.6: Add a Date Slicer
 
 On the final task, a date slicer was added on the **Customer Detail** report page to allow the user to filter the information on the page by year. The **between** style of slicer was used in order filter between 2010 and 2023 years. 
+
+## Milestone 6: Create an Executive Summary Page
+
+In this milestone an **Executive Summary** report page is created where an overview of the company's performance as a whole can be seen. This is useful of executes of the company to get insights and check outcomes against the targets quickly. 
+<br>The report will contain the following visuals:
+ - Card visuals showing *Total Revenue*, *Total Profit* and *Total Orders*.
+ - A graph of revenue against time (using Trending Line Chart).
+ - Donut charts showing revenue by country and store type.
+ - A bar chart of orders by product category.
+ - KPIs for quarterly revenue, profit and orders. </ul>
+
+### Task 6.1: Create the Card Visuals
+
+The aim of the task is to create three card visuals showing **Total Revenue**, **Total Profit** and **Total Orders** measures. 
+<br>
+<br>
+This is done by copying the card visuals from **Customer Detail** report page and pasting it in **Executive Summary** report page three times. The pasted card visuals are then assigned with **Total Revenue**, **Total Profit** and **Total Orders** measures. The card visuals are then formatted so that revenue and profit cards shown values are up to 2 decimal places and order card value up to 1 decimal value (using the **Format > Callout Value** pane).
+
+![alt text](6.1_card_visuals.png)
+
+### Task 6.2: Add a Revenue Trending Line Chart
+
+As with the previous task, a trending line chart is copied from **Customer Detail** report page and pasted into **Executive Summary** report page for quickness. In the **Build a Visual** pane x-axis is set to Date Hierarchy which displays only the *Start of Year*, *Start of Quarter* and *Start of Month* while y-axis is set to *Total Revenue* measure. A **Zoom slider** is added on the x-axis so that the user be able to adjust the timeline as needed. 
+
+![alt text](revenue_trending_line_chart.png)
+
+### Task 6.3: Add Donut Charts for Revenue by Country and Store Type
+
+Two donut charts are created to visualise the total revenue by country and store type. 
+<br>
+To visualise the revenue by country, the **Legend** option was set as stores[Country Code] column and the **Values** option was set as *Total Revenue* measure. To visualise the revenue by store type, the **Legend** was set as stores[Store Type] column and the **Values** was set as [Total Revenues] measure.
+
+----------------------------------include the printscreen of the donut charts!!!!!-------------------------------------------------
+
+### Task 6.4: Add a Bar Chart of Orders by Product Category
+
+Once again for quickness, a bar chart from **Customer Detail** report page is copied and then pasted into **Executive Summary** report page. In the on-object **Build a visual** pane, the visual type is changed to Clustered bar chart as well as x-axis is changed from *Total Customers* to *Total Orders* measure (*Category* measure on y-axis is left the same). Finally, from the on-object **Format** pane, **Date Labels** option is turned on. 
+
+![alt text](6.4_bar_chart.png)
+
+### Task 6.5: Add KPI visuals
+
+Before even creating KPI or a.k.a Key Performance Indicator visuals, a set of new measures need to be created which will be used in the visuals (see DAX formulas below):
+ - Previous Quarter Profit: &emsp;&emsp;&emsp;**Previous Quarter Profit = CALCULATE([Total Profit], PREVIOUSQUARTER(dates[Date]))**
+ - Previous Quarter Revenue: &ensp;&emsp;**Previous Quarter Revenue = CALCULATE([Total Revenue], PREVIOUSQUARTER(dates[Date]))**
+ - Previous Quarter Orders:&ensp;&ensp;&emsp;&ensp;**Previous Quarter Orders = CALCULATE([Total Orders], PREVIOUSQUARTER(dates[Date]))**
+ - Target Profit: &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&emsp;&emsp;&emsp;&emsp;**Target Profit = [Previous Quarter Profit] * 1.05**
+ - Target Revenue:&ensp;&ensp;&ensp;&emsp;&emsp;&emsp;&emsp;&emsp;**Target Revenue = [Previous Quarter Revenue] * 1.05**
+ - Target Orders: &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**Target Orders = [Previous Quarter Orders] * 1.05**</ul>
+<br>
+A new KPI visual is selected created for the revenue. In the on-object **Build a visual** pane, **Value** is set as *Total Revenue* measure, **Trend axis** as *dates[Start of Quarter]* column and **Target** as *Target Revenue* measure. In the **Format** pane, **Trend of axis** is turned on the values are set so that **Direction** is set to *High is Good*, **Bad colour** is set to red colour and **Transparency** is set to 15%. Then the **Callout value** option in the **Format** pane is set to show the KPI value up to 1 decimal place. This creates a KPI for revenue visual that shows the quarterly revenue against the target quarterly revenue. 
+<br>
+<br>
+The KPI for revenue visual is then duplicated twice and adjusted in order to display KPI visuals for profit and orders.
+<br>
+<br>
+![alt text](KPI_visuals.png)
+<br>
+<br>
+The completed **Executive Summary** report page can be seen below:
+<br>
+-----------------------------------add printscreen---------------------------------------------
