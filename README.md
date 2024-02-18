@@ -199,7 +199,7 @@ Two donut charts are created to visualise the total revenue by country and store
 <br>
 To visualise the revenue by country, the **Legend** option was set as stores[Country Code] column and the **Values** option was set as *Total Revenue* measure. To visualise the revenue by store type, the **Legend** was set as stores[Store Type] column and the **Values** was set as [Total Revenues] measure.
 
-----------------------------------include the printscreen of the donut charts!!!!!-------------------------------------------------
+![alt text](6.3_donut_charts.png)
 
 ### Task 6.4: Add a Bar Chart of Orders by Product Category
 
@@ -228,4 +228,136 @@ The KPI for revenue visual is then duplicated twice and adjusted in order to dis
 <br>
 The completed **Executive Summary** report page can be seen below:
 <br>
------------------------------------add printscreen---------------------------------------------
+![alt text](Executive_Summary_page.png)
+
+## Milestone 7: Create a Product Detail Page
+
+In this milestone the Product Detail Page of the report will be set up in order to provide an in-depth look at which products are performing well, with the option to filter by product category and country. 
+<br> The report page will contain:
+ - Set of three gauge visuals showing the current-quarter performance of Orders, Revenue and Profit against a quarterly target.
+ - Card visuals that shows which filters are selected.
+ - An area chart showing relative revenue performance of each category over time. 
+ - A table showing top 10 of products by revenue.
+ - A scatter graph of quantity ordered against profit per order item, filtered by product category. </ul>
+
+### Task 7.1: Add Gauge Visuals
+
+In order to create a set of three gauges showing the current-quarter performance of **Orders**, **Revenue** and **Profit** against a quarterly target (which in this case is 10% quarter-on-quarter growth in all three metrics), six DAX measures had to be created:
+ - Current Quarter Orders: &emsp;&emsp;&emsp;&emsp;**Current Quarter Orders = CALCULATE([Total Orders], QUARTER(dates[Date]))**
+ - Current Quarter Revenue:&ensp;&ensp;&ensp;&emsp;&emsp;**Current Quarter Revenue = CALCULATE([Total Revenue], QUARTER(dates[Date]))**
+ - Current Quarter Profit: &ensp;&emsp;&emsp;&emsp;&emsp;**Current Quarter Profit = CALCULATE([Total Profit], QUARTER(dates[Date]))**
+ - 10% Target Orders: &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**10% Target Orders = [Current Quarter Orders] * 1.10**
+ - 10% Target Revenue:&ensp;&ensp;&ensp;&emsp;&emsp;&emsp;&emsp;**10% Target Revenue = [Current Quarter Revenue] * 1.10**
+ - 10% Target Profit:&ensp;&ensp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**10% Target Profit = [Current Quarter Profit] * 1.10** </ul>
+
+
+For each gauge, the maximum value is set to the target (in the **Build a visual** pane, *Current Quarter Orders/Revenue/Profit* is added to the **Value** section and *10% Target Orders/Revenue/Profit* is added to the **Maximum Value** section respectively), so that each gauge shows as full when the target is met.
+<br>
+<br>
+Afterwards, Conditional Formatting is applied to the **Callout Value** (the number in the middle of each gauge) so that it shows as red if the target is not yet met. This is done by creating rules via the **Format** pane> **Callout Value > Values: Colours**
+
+![alt text](7.1_gauge_conditional_formating.png)
+
+See the finished gauge visuals below:
+
+![alt text](7.1_gauges.png)
+
+### Task 7.2: Plan Out the Filter State Cards
+
+Two rectangular shapes and two cards are created in the left corner of the **Product Detail** report page. Each shape is grouped up in the **Selection** pane with a card which forms two groups (Group 1 and Group 2) while in both groups having the card visual being at the top of the list. 
+<br>
+<br>
+![alt text](7.2_groups.png)
+<br>
+<br>
+In each card's settings (located at the **Format** pane) the background is turned off in order for the shapes to represent the background of the cards. 
+<br>
+<br>
+Before adding any values to the cards, two new measures are created:
+ - Category Selection: <br>**IF(ISFILTERED(Products[Category]), SELECTEDVALUE((Products[Category]), "No Selection"),"No Selection")**
+ - Country Selection: <br>**Country Selection = IF(ISFILTERED(Stores[Country]), SELECTEDVALUE((Stores[Country]), "No Selection"),"No Selection")** </ul>
+
+These two measures are then added to each of the blank cards. This allows each of the cards to portray the name of the category or country when selected by the user. However if nothing is selected by the user, the cards will simply show "No Selection" sign. 
+<br>
+<br>
+![alt text](7.2_filter_state_cards.png)
+
+### Task 7.3: Add an Area Chart of Revenue by Product Category
+
+For this task an area chart is created in order to show how the different product categories are performing in terms of revenue over time. In the new chart, the dates[Start of the Quarter] date hierarchy is added on the x-axis with the ability for the user to drill down the information from *Start of Quarter* up to the *Day*, *Total Revenue* measure added on the y-axis and products[Category] columns values are added to the Legend.
+
+![alt text](7.3_area_chart_settings.png)
+
+See the completed area chart visual below:
+
+![alt text](7.3_area_chart.png)
+
+### Task 7.4: Add a Top Products Table
+
+In order to see which products generate most revenue, a table is created to portray the top 10 products by total revenue. 
+<br>
+<br>
+The table contains the following fields:
+ - products[Description] column values, renamed for the visual as "Top 10 Products".
+ - products[Category] column values
+ - Total Revenue measure, which has **TopN filter** applied to show top 10 items as well as conditional formatting applied to show data bars for total revenue values.
+ - Total Customers measure
+ - Total Orders measure
+ - Profit per Order measure </ul>
+<br>
+![alt text](7.4_top10_table.png)
+
+### Task 7.5: Add a Scatter Graph of Quantity Sold vs Profit per Item
+
+Scenario: *The products team want to know which items to suggest to the marketing team for a promotional campaign. They want a visual that allows them to quickly see which product ranges are both top-selling items and also profitable.* To complete this task a scatter graph was chosen to illustrate this. 
+<br>
+<br>
+Firstly, a calculated column called *Profit per Item* was created in the *products* table using the DAX formula: 
+<br>**Profit per Item = products[Sale Price] - products[Cost Price]**
+<br>
+<br>
+Then the newly added Scatter graph is configured in a way below:
+ - **Values**: products[Description]
+ - **X-axis**: products[Profit per Item]
+ - **Y-axis**: orders[Total Quantity]
+ - **Legend**: products[Category] </ul>
+<br>
+![alt text](7.5_scatter_graph.png)
+
+### Task 7.6: Create a Slicer Toolbar
+
+The aim of this task is to create a pop-out toolbar containing two slicers which can be accessed from the navigation bar on the left-hand side of the report page. 
+<br>
+<br>
+To start with, a set of custom navigation bar icons were downloaded from a given link. Then a new blank button was added to the top of the navigation bar, the icon type is set to *Custom* in the **Format** pane, and Filter_icon.png icon image was chosen for the button. Also the *tooltip text* was set to "Open Slicer Panel".
+
+![alt text](7.6_open_slicer_panel_button.png)
+<br>
+
+Then a new rectangle shape (with same height as the page and 3-5x the width of the navigation bar) in the same turquoise colour as the navigation bar was added. On the **Selection** pane, the newly created shape is brought to the top of the stacking order. This will be our slicer toolbar shape.
+
+Afterwards, two new slicers are created. One for product's category selection (products[Category] is added to the **Field** section) and one for selection of a country (stores[Country] is added to the **Field** section). The titles for the slices are changed to "Product Category" and "Country" respectively. The slicers were edited in a way that both would be in **Vertical List** slicer style, user can select multiple items in *Product Category* slicer, but only one option at the time for *Country* slicer and adding **Select All** option to **Country** slicer so that the user can select all the countries if he/she does not wish to filter the data by country. Both slicers are then placed on top of the slicer toolbar shape with background colour removed (so that the slicer toolbar shape colour would fill the slicers).
+
+A back button is added (**Insert** on the ribbon > **Buttons** > **Back**) on top corner of the slicer toolbar shape. This button will allow us to hide the slicer toolbar when it is not in use. 
+
+Now in the **Selection** pane, we group the slicer toolbar shape, two slicers and a back button into one group (Group 3) and once again we make sure it is at the top of the stacking order. 
+
+![alt text](7.6_group3.png)
+
+See the complete slicer toolbar below:
+
+![alt text](7.6_slicer_toolbar.png)
+
+To add bookmarks, we need to open **Bookmarks** pane and add two bookmarks: one called "Slicer Bar Closed" and the other one called "Slicer Bar Open". The idea is that the "Slicer Bar Closed" bookmark will have the slicer bar hidden while the "Slicer Bar Open" bookmark will have the slicer bar visible. When right-clicking each bookmark, it is set so that **Display**, **Current Page** and **All visuals** options are all ticked while the rest of the categories are unchecked (it is essential not to leave **Data** option ticked as this will prevent the bookmark from altering the slicer state when we open or close the slicer toolbar). 
+
+![alt text](7.6_bookmark_settings.png)
+
+Finally, we assign actions to our "Open Slicer Panel" and "Back" buttons. We can do that by individually selecting each button and then in **Format button** pane and turning the **Action** option on. For the "Back" button we select **Action type** as "Bookmark" and **Action Bookmark** as "Slicer Bar Closed" while for the "Open Slicer Panel" button we select **Action type** as "Bookmark" and **Action Bookmark** as "Slicer Bar Closed.
+
+![alt text](7.6_back_button_action.png) ![alt text](7.6_open_slicer_panel_button_action.png)
+
+Now we can test the buttons and slicers work (to test the buttons we need to use Ctrl-Click while designing the report in Power BI Desktop).
+
+See the complete **Product Detail** report page below:
+
+![alt text](Product_Detail_Page.png)
