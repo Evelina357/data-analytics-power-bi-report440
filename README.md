@@ -360,7 +360,7 @@ Now we can test the buttons and slicers work (to test the buttons we need to use
 
 See the complete **Product Detail** report page below:
 
-![alt text](Product_Detail_Page.png)
+![alt text](Product_Detail_page.png)
 
 ## Milestone 8: Create a Stores Map Page
 
@@ -487,19 +487,19 @@ For each icon there are two colour variants. The white version is used for the d
 
 Executive Summary page icon:
 
-![alt text](Dashboard_Icon.png) &emsp;&emsp; ![alt text](Dashboard_Icon_black.png)
+![alt text](Dashboard_Icon.png) &emsp;&emsp; ![alt text](Dashboard_Icon_Black.png)
 
 Customer Detail page icon:
 
-![alt text](Customer_Icon.png) &emsp;&emsp; ![alt text](Customer_Icon_black.png)
+![alt text](Customer_Icon.png) &emsp;&emsp; ![alt text](Customer_Icon_Black.png)
 
 Product Detail page icon:
 
-![alt text](Product_Icon.png) &emsp;&emsp; ![alt text](Product_Icon_black.png)
+![alt text](Product_Icon.png) &emsp;&emsp; ![alt text](Product_Icon_Black.png)
 
 Stores Map page icon:
 
-![alt text](Map_Icon.png) &emsp;&emsp; ![alt text](Map_Icon_black.png)
+![alt text](Map_Icon.png) &emsp;&emsp; ![alt text](Map_Icon_Black.png)
 
 In the sidebar of the **Executive Summary** page, four new blank buttons are added, and in the **Format Button** pane > Button > Button Style, the **Apply settings to** field is set to *Default*, and then each button icon is set to the relevant white png in the **Format Button** pane > Button Style > Icon > Icon Type field.
 <br>
