@@ -361,3 +361,190 @@ Now we can test the buttons and slicers work (to test the buttons we need to use
 See the complete **Product Detail** report page below:
 
 ![alt text](Product_Detail_Page.png)
+
+## Milestone 8: Create a Stores Map Page
+
+Scenario: *The regional managers have requested a report page that allows them to easily check on the stores under their control, allowing them to see which of the stores they are responsible are most profitable, as well as which are on track to reach their quarterly profit and revenue targets. After reviewing the brief, you decide that the best way to handle this is using a map visual.*
+<br>
+
+### Task 8.1: Add a Map Visual
+
+On the **Stores Map** page, a new map visual is added with **Location** set as *Geographic Hierarchy* and **Bubble size** set as *Profit YTD* measure. By adding *Geographic Hierarchy* to the map visual we allow the user to filter the information about the stores by country region, country and world region they are in. 
+<br>
+<br>
+The controls of the map visual are as follows:
+ - **Show Labels** function in the **Format** pane > Map Settings > Style is turned On. 
+ - **Auto Zoom** function in the **Format** pane > Map Settings > Controls is turned On while **Zoom Buttons** and **Lasso button** is turned Off. </ul>
+
+![alt text](8.1_map_visual(1).png)
+<br>
+![alt text](8.1_map_visual(2).png)
+<br>
+![alt text](8.1_map_visual(3).png)
+
+### Task 8.2: Add a Country Slicer
+
+A **Tile** slicer is then added above the map visual with stores[Country] set to the **Field** section. This allows the user to filter the map visual by country (selecting to see information about the stores from United Kingdom, United States or Germany).
+<br>
+<br>
+The controls of the slicer are as follows:
+ - **Multi-select with Ctrl/Cmd** function in the **Format** pane section > Slicer Settings > Selection is turned On.
+ - **Show "Select All" as an option in the slicer** function in the **Format** pane section > Slicer Settings > Selection is turned On. </ul>
+
+![alt text](8.2_country_slicer.png)
+
+### Task 8.3: Create a Stores Drillthrough Page
+
+The purpose of a drillthrough page will be to summarise the each store's performance which will make it easy for the region managers to check on the progress of any given store. 
+<br>
+<br>
+Once the new report page is created and named **Stores Drillthrough**, it's page settings (via **Format** pane) are adjusted so that the **Page Type** (in **Page Information** section) is set to *Drillthrough*, **Drillthrough from** is set to *stores[Country Region]* column and **Drillthrough when** is set to *Country Region is Used as Category*.
+<br>
+<br>
+Once the page is set up, four types of visuals are added to the page:
+ - A table showing top 5 products based on total revenue
+ - A clustered column chart showing total orders by product category.
+ - Two gauges, showing profit year to date against profit goal and then revenue year to date against revenue goal. 
+ - A card visual that shows the name of the selected store (selecting one of the country regions).
+
+Firstly, a table is created with columns: *products[Description]* (which is renamed to "Top 5 Products"), *Profit YTD* measure, *Total Orders* measure and *Total Revenue* measure. Through **Filters** pane, *Top 5 Products* column has **Filter Type** set as *TopN*, **Shown Items** as *Top 5* and **By value** as *Total Revenue* measure. As a final touch, *Total Revenue* column in the table is edited through conditional formatting to include data bars.This allows the region managers to see the top 5 products by revenue of any store.
+
+![alt text](8.3_table.png)
+
+Secondly, a clustered column chart visual is created with *products[Category]* values being set on **X-axis** and *Total Orders* measure being set on **Y-axis*. This shows which product category generates most orders for any chosen store. 
+
+![alt text](8.3_column_chart.png)
+
+Thirdly, a couple of new measures were created which will be used in gauge visuals:
+ - Profit Goal:&ensp;&ensp;&ensp;&ensp;&emsp;**Profit Goal = (CALCULATE([Profit YTD], SAMEPERIODLASTYEAR(dates[Date])) * 1.20)**
+ - Revenue Goal:&ensp;&ensp;&ensp;**Revenue Goal = (CALCULATE([Revenue YTD], SAMEPERIODLASTYEAR(dates[Date])) * 1.20)** </ul>
+
+The goals are made by adding 20% increase on the previous year's Profit YTD and Revenue YTD.
+<br>
+<br>
+Two gauge visuals are then created using *Profit YTD* and *Profit Goal* measures to show profit year-to-date of any given store against the target and using *Revenue YTD* and *Revenue Goal* measures to show revenue year-to-date of any given store against the target. 
+
+![alt text](8.3_gauge_visuals.png)
+
+Finally, in order to create a selection card visual to show the name of the store selected, a new measure is created: 
+<br> **Store Selection = IF(ISFILTERED(stores[Country Region]), SELECTEDVALUE((stores[Country Region]), "No Selection"),"No Selection")**
+<br>
+This new measure is then used in the **Field** section of the card visual. 
+
+![alt text](8.3_selection_card_visual.png)
+
+See below the completed Store Drillthrough page:
+
+![alt text](Store_Drillthrough_page.png)
+
+### Task 8.4: Create a Stores Tooltip Page
+
+In order to provide the store map an extra feature where users would be able to see each store's year-to-date profit against the profit target just by hovering the mouse over a store on the map, a new tooltip page named **Stores Tooltip** is created. In the **Format** pane > Page Information > Page Type is selected as *Tooltip* which then significantly reduces the dimensions of the page (the dimensions of a tooltip are provided). From the **Stores Drillthrough** page, the Profit YTD vs Profit Goal gauge visual is copied and pasted into the **Stores Tooltip** page. 
+
+![alt text](Stores_Tooltip_page.png)
+
+See below the gauge tooltip in action when using the store's map as well as the completed version of **Stores Map** page:
+
+![alt text](Stores_Map_page.png)
+
+## Milestone 9: Cross-Filtering and Navigation
+
+### Task 9.1: Fix the cross-filtering
+
+Power BI has cross-highlighting set up by default on most visuals, which means clicking on a region in one visual will automatically filter the others. However, we may not want this function to be applied for all our visuals as it may misrepresent the intend of some visuals. 
+
+1. <ins>Executive Summary Page</ins>
+<br>
+<br>
+The *Order by Category bar chart* showing the total orders by product category should not filter the card visuals or KPIs. This is because the filtering of card visuals and KPIs by product category would not give the user much insight. This can be done by clicking on the actual bar chart and then on the main ribbon **Format** tab, we need to click **Edit Interactions**. This allows us to choose the visuals that we want not to be filtered by the bar chart (see the printscreen below)
+
+![alt text](9.1_edit_interactions.png)
+
+The sign below means the visual will not be filtered by the bar chart:
+
+![alt text](9.1_no_filtering.png)
+
+While this sign below means the visual will be filtered by the bar chart:
+
+![alt text](9.1_with_filtering.png)
+
+2. <ins>Customer Detail Page</ins>
+<br>
+<br>
+The visual interactions are changed so that *Top 20 Customers table* would not filter any other visuals on the page, *Total Customers by Product Category clustered column chart* would not filter *Customers Trending Line Chart*.
+
+3. <ins>Product Detail Page</ins>
+<br>
+<br>
+The visual interactions are changed so that *Orders vs Profitability Scatter Chart* and *Top 10 Products table* would not filter any other visuals. 
+
+### Task 9.2: Finish the Navigation Bar
+
+As the final touch for our navigation bar, the four custom icons (which we downloaded earlier) are added to the navigation bar which would allow the users to easily move between pages. Each custom icon represent the each of the four report pages: **Executive Summary**, **Customer Detail**, **Product Detail** and **Stores Map**. 
+<br>
+<br>
+For each icon there are two colour variants. The white version is used for the default button appearance while the black version is used to show the button changing colour when hovered over with the mouse pointer. However as the downloaded icons only have white and cyan versions (the cyan version icons in our report case cannot be used as the colour matches the navigation bar and therefore the icons would be lost when hovered over with the mouse pointer), the cyan icons recoloured into black via this [website](https://onlinepngtools.com/change-png-color).
+
+Executive Summary page icon:
+
+![alt text](Dashboard_Icon.png) &emsp;&emsp; ![alt text](Dashboard_Icon_black.png)
+
+Customer Detail page icon:
+
+![alt text](Customer_Icon.png) &emsp;&emsp; ![alt text](Customer_Icon_black.png)
+
+Product Detail page icon:
+
+![alt text](Product_Icon.png) &emsp;&emsp; ![alt text](Product_Icon_black.png)
+
+Stores Map page icon:
+
+![alt text](Map_Icon.png) &emsp;&emsp; ![alt text](Map_Icon_black.png)
+
+In the sidebar of the **Executive Summary** page, four new blank buttons are added, and in the **Format Button** pane > Button > Button Style, the **Apply settings to** field is set to *Default*, and then each button icon is set to the relevant white png in the **Format Button** pane > Button Style > Icon > Icon Type field.
+<br>
+<br>
+In order for the any of the button icon to change from white to black when hovered over with the mouse pointer, we go to **Format button** pane > Button Style > Apply settings to and set it to *On Hover*, and then select the black icon png under the **Icon tab**. 
+<br>
+<br>
+Then for each button in **Format button** pane > Action, we turn the Action On, assign the **Type** to *Page Navigation* and then select the correct page name under **Destination**. 
+<br>
+<br>
+As an extra feature, we can make our buttons clearer by going to **Format button** pane > Tooltip, turning the Tooltip On and under the **Text** write the name of each report page. This will provide a pop up text of report page name when user hovers over the button with the mouse pointer (see the example image below):
+
+![alt text](9.2_button_tooltip.png)
+
+Once the setup for the four buttons on the **Executive Summary** page are finished, they are copied and pasted on other report pages. 
+<br>
+<br>
+Let us not forget to also to add the back button for each page.
+
+See below for the completed navigation bar (example taken from **Product Detail** report page):
+
+![alt text](Navigation_Bar.png)
+
+After re-arranging and adjusting some visuals in each report page, see the completed report pages below:
+<br>
+<br>
+<ins>Executive Summary page:</ins>
+<br>
+<br>
+![alt text](Executive_Summary_page(1).png)
+<br>
+<br>
+<ins>Customer Detail page:</ins>
+<br>
+<br>
+![alt text](Customer_Detail_page(1).png)
+<br>
+<br>
+<ins>Product Detail page:</ins>
+<br>
+<br>
+![alt text](Product_Detail_page(1).png)
+<br>
+<br>
+<ins>Stores Map page:</ins>
+<br>
+<br>
+![alt text](Stores_Map_page(1).png)
