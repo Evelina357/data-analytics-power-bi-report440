@@ -54,6 +54,15 @@ The work completed for the project is described through 10 Milestones.
 9. [Milestone 9: Cross-filtering and Navigation](#milestone-9-cross-filtering-and-navigation)
     - [9.1: Fix the Cross-filtering](#task-91-fix-the-cross-filtering)
     - [9.2: Finish the Navigation Bar](#task-92-finish-the-navigation-bar)
+10. [Milestone 10: Create Metrics for Users Outside the Company Using SQL](#milestone-10-create-metrics-for-users-outside-the-company-using-sql)
+     - [10.1: Connect to the SQL Server](#task-101-connect-to-the-sql-server)
+     - [10.2: Check the Table and Column Names](#task-102-check-the-table-and-column-names)
+     - [10.3: Query the Database](#task-103-query-the-database)
+        - [10.3.1: How many staff are there in all of the UK stores?](#task-1031-how-many-staff-are-there-in-all-of-the-uk-stores)
+        - [10.3.2: Which month in 2022 has had the highest revenue?](#task-1032-which-month-in-2022-has-had-the-highest-revenue)
+        - [10.3.3: Which German store type had the highest revenue for 2022?](#task-1033-which-german-store-type-had-the-highest-revenue-for-2022)
+        - [10.3.4: Create a view where the rows are the store types and the columns are the total sales, percentage of total sales and the count of orders.](#task-1034-create-a-view-where-the-rows-are-the-store-types-and-the-columns-are-the-total-sales-percentage-of-total-sales-and-the-count-of-orders)
+        - [10.3.5: Which product category generated the most profit for the "Wiltshire, UK" region in 2021?](#task-1035-which-product-category-generated-the-most-profit-for-the-wiltshire-uk-region-in-2021)
 
 ## Milestone 1: Set up the Environment
 
@@ -666,3 +675,172 @@ After re-arranging and adjusting some visuals in each report page, see the compl
 <br>
 <br>
 ![alt text](README_visuals/Stores_Map_page(1).png)
+
+## Milestone 10: Create Metrics for Users Outside the Company Using SQL
+
+*Scenario: In industry, it is common to encounter clients who don't have direct access to specialised visualisation tools like Power BI. To ensure that data insights can still be extracted and shared with a broader audience, in this final milestone you will use SQL queries as an additional tool in your data analysis toolkit. This will allow you to extract and disseminate key data without relying solely on visualisation platforms.*
+
+### Task 10.1: Connect to the SQL Server
+
+For this task VSCode programme is opened and SQLTools extension is downloaded. Using this extension we have connected to the PostgreSQL database server (hosted by Microsoft Azure) using the given credentials (such as host name, port, database name, username and password).
+
+### Task 10.2: Check the Table and Column Names
+
+For the convenience of the users, sql queries are produced in order to generate a list of tables and a list of the column names in each of those tables. In each case, the sql query results are saved as CSV files.
+
+See below for sql query to generate a list of tables in the database:
+<br>
+<br>
+<span style="color:red;">SELECT table_name 
+<br>
+FROM information_schema.tables 
+<br>
+WHERE table_schema = 'public';</span>
+
+See below for sql query to generate a list of columns for *orders* table:
+
+<span style="color:red;">SELECT column_name
+<br>
+FROM information_schema.columns
+<br>
+WHERE table_name = 'orders';</span>
+
+Same process (to generate a list of columns in a table) as above is repeated for other tables.
+
+All the CSV and SQL files for this task can be found in *SQL* > *table_column_names* folder.
+
+### Task 10.3: Query the Database
+
+In this task sql queries are written (and saved as sql files) and results are saved as CSV files to answer the following questions:
+
+ 1. How many staff are there in all of the UK stores?
+ 2. Which month in 2022 has had the highest revenue?
+ 3. Which German store type had the highest revenue for 2022?
+ 4. Create a view where the rows are the store types and the columns are the total sales, percentage of total sales and the count of orders.
+ 5. Which product category generated the most profit for the "Wiltshire, UK" region in 2021? 
+
+All the sql and CSV files for this task can be found in *SQL* > *database_queries* folder.
+
+#### Task 10.3.1: How many staff are there in all of the UK stores?
+
+See the sql query below:
+
+<span style="color:red;">SELECT SUM(staff_numbers) AS total_number_of_staff
+<br>
+FROM dim_store
+<br>
+WHERE country_code = 'GB';</span>
+
+With the help of the query we get an answer that **there are a total of 13273 staff employed in UK stores**.
+
+#### Task 10.3.2: Which month in 2022 has had the highest revenue?
+
+See the sql query below:
+
+<span style="color:red;">SELECT month_name,
+<br>
+&emsp;&emsp;&emsp;&ensp;SUM(product_quantity * sale_price) AS total_revenue
+<br>
+FROM forview
+<br>
+WHERE order_date LIKE '2022%'
+<br>
+GROUP BY month_name
+<br>
+ORDER BY total_revenue DESC;</span>
+
+With the help of the query we get an answer that **August was the month during which the highest revenue was achieved in 2022**.
+
+#### Task 10.3.3: Which German store type had the highest revenue for 2022?
+
+See the sql query below:
+
+<span style="color:red;">SELECT ROUND(SUM(forview.product_quantity * forview.sale_price)::numeric,2) AS total_revenue,
+<br>
+&emsp;&emsp;&emsp;&ensp;forview.store_type
+<br>
+FROM 
+<br>
+&emsp;&emsp;&emsp;&ensp;forview
+<br>
+INNER JOIN 
+<br>
+&emsp;&emsp;&emsp;&ensp;dim_store ON forview.country = dim_store.country
+<br>
+WHERE 
+<br>
+&emsp;&emsp;&emsp;&ensp;order_date LIKE '2022%' AND forview.country = 'Germany'
+<br>
+GROUP BY 
+<br>
+&emsp;&emsp;&emsp;&ensp;forview.store_type
+<br>
+ORDER BY 
+<br>
+&emsp;&emsp;&emsp;&ensp;total_revenue DESC;</span>
+
+With the help of the query we get an answer that **out of all the German store types, it was the local stores that generated the highest revenue in 2022**.
+
+#### Task 10.3.4: Create a view where the rows are the store types and the columns are the total sales, percentage of total sales and the count of orders.
+
+See the sql query below:
+
+<span style="color:red;">WITH cte AS 
+<br>
+&emsp;&emsp;&emsp;&ensp;(SELECT 
+<br>
+&emsp;&emsp;&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;ROUND(SUM(dim_product.sale_price * orders.product_quantity)::numeric,2) AS total_sales,
+<br>
+&emsp;&emsp;&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;COUNT(orders.order_date_uuid) AS count_orders,
+<br>
+&emsp;&emsp;&emsp;&ensp;&emsp;&ensp;&emsp;&ensp;dim_store.store_type AS store_type
+<br>
+&emsp;&emsp;&emsp;&ensp;FROM orders
+<br>
+&emsp;&emsp;&emsp;&ensp;JOIN dim_product ON dim_product.product_code = orders.product_code
+<br>
+&emsp;&emsp;&emsp;&ensp;JOIN dim_store ON dim_store.store_code = orders.store_code
+<br>
+&emsp;&emsp;&emsp;&ensp;GROUP BY dim_store.store_type)
+<br>
+,
+<br>
+sum_total_sales AS 
+<br>
+&emsp;&emsp;&emsp;&ensp;(SELECT SUM(cte.total_sales) AS sum_total_sales
+<br>
+&emsp;&emsp;&emsp;&ensp;FROM cte)
+<br>
+SELECT 
+<br>
+&ensp;&emsp;&ensp;&emsp;cte.store_type,
+<br>
+&ensp;&emsp;&ensp;&emsp;cte.total_sales,
+<br>
+&ensp;&emsp;&ensp;&emsp;ROUND((cte.total_sales/(SELECT sum_total_sales FROM sum_total_sales))*100::numeric,2) AS perc_total_sales,
+<br>
+&ensp;&emsp;&ensp;&emsp;cte.count_orders
+<br>
+FROM cte;</span>
+
+See the print screen of the table created by the above sql query:
+
+![alt text](SQL/database_queries/question_4_table.png)
+
+#### Task 10.3.5: Which product category generated the most profit for the "Wiltshire, UK" region in 2021?
+
+See the sql query below:
+
+<span style="color:red;">SELECT category,
+<br>
+&emsp;&emsp;&emsp;&ensp;ROUND(SUM((sale_price - cost_price) * product_quantity)::numeric, 2) AS profit
+<br>
+FROM forview
+<br>
+WHERE full_region = 'Wiltshire, UK' and order_date LIKE '2021%'
+<br>
+GROUP BY category
+<br>
+ORDER BY profit DESC;</span>
+
+With the help of the query we get an answer that **homeware product category has generated the most profit for the "Wiltshire, UK" region in 2021**.
